@@ -54,10 +54,10 @@ const styles = StyleSheet.create({
       marginBottom : 10
     },
     logo: {
-        width: 350, // Image Width
-        height: 350, // Image Height
-        marginBottom: 20, // Space between image and text
-        borderRadius: 75, // Circular Image
+        width: 350,
+        height: 350,
+        marginBottom: 20,
+        borderRadius: 75,
     },
     mainText: {
         fontSize: 36,
