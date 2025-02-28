@@ -19,7 +19,7 @@ export default function LoginScreen() {
         <View style={styles.container}>
 
             <Image
-                source={require('../assets/login.jpg')} // Replace with your image path
+                source={require('../assets/login.jpg')}
                 style={styles.logo}
             />
 
