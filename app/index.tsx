@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Image,View, Text, TextInput, Button, ImageBackground, StyleSheet } from 'react-native';
+import { Image,View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import {useRouter} from "expo-router";
 
 export default function LoginScreen() {
