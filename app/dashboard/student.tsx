@@ -3,68 +3,85 @@ import { Button, StyleSheet, Text, TextInput, View, TouchableOpacity } from "rea
 
 export default function Student() {
     const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
-    const [nic, setNic] = useState('');
+    const [phone, setPhone] = useState('');
     const [address, setAddress] = useState('');
+    const [city, setCity] = useState('');
     const [program, setProgram] = useState('');
+    const [birthday, setBirthday] = useState('');
+
 
     const handleSubmit = () => {
-        console.log({ firstName, email, nic, address, program });
+        console.log({ firstName, lastName, email, phone, address, city, program, birthday });
     };
 
     const handleClose = () => {
-
         console.log("Form Closed");
     };
 
     return (
         <View style={styles.container}>
-
             <Text style={styles.heading}>Student Manage</Text>
 
-
-            <TextInput
-                style={styles.textFields}
-                placeholder="First Name"
-                value={firstName}
-                onChangeText={setFirstName}
-            />
-
-
-            <View style={styles.emailNicContainer}>
+            <View style={styles.nameContainer}>
                 <TextInput
-                    style={[styles.textFields, styles.email]}
-                    placeholder="Email"
-                    value={email}
-                    onChangeText={setEmail}
+                    style={[styles.textFields, styles.nameField]}
+                    placeholder="First Name"
+                    value={firstName}
+                    onChangeText={setFirstName}
                 />
                 <TextInput
-                    style={[styles.textFields, styles.nic]}
-                    placeholder="NIC"
-                    value={nic}
-                    onChangeText={setNic}
+                    style={[styles.textFields, styles.nameField]}
+                    placeholder="Last Name"
+                    value={lastName}
+                    onChangeText={setLastName}
                 />
             </View>
 
-
             <TextInput
-                style={[styles.textFields, styles.reducedHeight]}
-                placeholder="Address"
+                style={styles.textFields}
+                placeholder="Street Address"
                 value={address}
                 onChangeText={setAddress}
             />
             <TextInput
-                style={[styles.textFields, styles.reducedHeight]}
-                placeholder="Program"
-                value={program}
-                onChangeText={setProgram}
+                style={styles.textFields}
+                placeholder="City"
+                value={city}
+                onChangeText={setCity}
             />
+            <View style={styles.rowContainer}>
+                <TextInput
+                    style={[styles.textFields, styles.halfField]}
+                    placeholder="Program"
+                    value={program}
+                    onChangeText={setProgram}
+                />
+                <TextInput
+                    style={[styles.textFields, styles.halfField]}
+                    placeholder="Birthday"
+                    value={birthday}
+                    onChangeText={setBirthday}
+                />
+            </View>
 
+            <TextInput
+                style={styles.textFields}
+                placeholder="Email"
+                value={email}
+                onChangeText={setEmail}
+            />
+            <TextInput
+                style={styles.textFields}
+                placeholder="Phone"
+                value={phone}
+                onChangeText={setPhone}
+            />
 
             <TouchableOpacity style={styles.addButton} onPress={handleSubmit}>
                 <Text style={styles.addButtonText}>Add</Text>
             </TouchableOpacity>
-
 
             <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
                 <Text style={styles.closeButtonText}>Close</Text>
@@ -87,7 +104,12 @@ const styles = StyleSheet.create({
         marginBottom: 30,
         color: "#333",
     },
-    emailNicContainer: {
+    nameContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginBottom: 15,
+    },
+    rowContainer: {
         flexDirection: "row",
         justifyContent: "space-between",
         marginBottom: 15,
@@ -105,18 +127,14 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
-        height: 50,
-        paddingLeft: 15,
-        flex: 1,
     },
-    email: {
+    nameField: {
+        flex: 1,
         marginRight: 10,
     },
-    nic: {
-        marginLeft: 10,
-    },
-    reducedHeight: {
-        height: 40,
+    halfField: {
+        flex: 1,
+        marginRight: 10,
     },
     addButton: {
         backgroundColor: '#06B6D4',
