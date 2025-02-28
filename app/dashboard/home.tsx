@@ -1,5 +1,6 @@
 import React from 'react';
-import { Text, View, StyleSheet, Image, ScrollView } from 'react-native';
+import { Text, View, StyleSheet, Image, ScrollView,TouchableOpacity } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 
 export default function Home() {
     return (
@@ -21,21 +22,47 @@ export default function Home() {
 
                 <View style={styles.card}>
                     <Text style={styles.cardTitle}>Teacher</Text>
-                    <Text style={styles.cardCount}>1328</Text>
+                    <Text style={styles.cardCount}>122</Text>
                     <Text style={styles.cardDescription}>All registered teachers</Text>
                 </View>
 
                 <View style={styles.card}>
                     <Text style={styles.cardTitle}>Staff</Text>
-                    <Text style={styles.cardCount}>1328</Text>
+                    <Text style={styles.cardCount}>158</Text>
                     <Text style={styles.cardDescription}>All registered staff</Text>
                 </View>
             </View>
 
-            <Image
-                source={{ uri: 'https://img.freepik.com/free-vector/presentation-concept-illustration_114360-2682.jpg?t=st=1740728652~exp=1740732252~hmac=8df921d4fbe251e962afa4143f94867417b4a5b55552908a4221321d0686e717&w=1480' }} // Use a URL or require for local images
-                style={styles.image}
-            />
+            <View style={styles.iconContainer}>
+                <TouchableOpacity style={styles.iconWrapper}>
+                    <View style={[styles.iconCircle, { backgroundColor: '#407BFF' }]}>
+                        <FontAwesome name="envelope" size={24} color="white" />
+                    </View>
+                    <Text style={styles.iconLabel}>Email</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.iconWrapper}>
+                    <View style={[styles.iconCircle, { backgroundColor: '#2DBF64' }]}>
+                        <FontAwesome name="calendar-check-o" size={24} color="white" />
+                    </View>
+                    <Text style={styles.iconLabel}>Attendance</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.iconWrapper}>
+                    <View style={[styles.iconCircle, { backgroundColor: '#F4B400' }]}>
+                        <FontAwesome name="table" size={24} color="white" />
+                    </View>
+                    <Text style={styles.iconLabel}>Time Table</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.iconWrapper}>
+                    <View style={[styles.iconCircle, { backgroundColor: '#34C4A0' }]}>
+                        <FontAwesome name="cogs" size={24} color="white" />
+                    </View>
+                    <Text style={styles.iconLabel}>Settings</Text>
+                </TouchableOpacity>
+            </View>
+
         </ScrollView>
     );
 }
@@ -44,9 +71,9 @@ const styles = StyleSheet.create({
     container: {
         padding: 20,
         backgroundColor: '#f5f5f5',
-        flexGrow: 1, // This makes sure the content takes the full height when scrolling
+        flexGrow: 1,
         alignItems: 'center',
-        justifyContent: 'flex-start', // Start the content from top
+        justifyContent: 'flex-start',
     },
     welcome: {
         fontSize: 32,
@@ -100,10 +127,31 @@ const styles = StyleSheet.create({
         color: '#777',
         textAlign: 'center',
     },
-    image: {
-        width: 300,  // Adjust the size as needed
-        height: 200, // Adjust the size as needed
-        marginTop: 20,
-        borderRadius: 10, // Optional: rounded corners for the image
+
+    iconContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        marginTop: 30,
+        width: '100%',
+    },
+    iconWrapper: {
+        alignItems: 'center',
+    },
+    iconCircle: {
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 10,
+        shadowColor: '#000',
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        shadowOffset: { width: 0, height: 2 },
+    },
+    iconLabel: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        textAlign: 'center',
     },
 });
