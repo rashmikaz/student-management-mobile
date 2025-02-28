@@ -1,30 +1,37 @@
 import React from 'react';
-import { Text, View, StyleSheet, Animated } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 
 export default function Home() {
     return (
         <View style={styles.container}>
             <Text style={styles.header}>Student Management System</Text>
 
-            {/* Student Count Card */}
-            <View style={styles.card}>
-                <Text style={styles.cardIcon}>👨‍🎓</Text>
-                <Text style={styles.cardTitle}>Students</Text>
-                <Text style={styles.cardCount}>100</Text>
-            </View>
+            <Text style={styles.welcome}>Welcome back</Text>
+            <Text style={styles.description}>
+                "Effortless student management with real-time insights, attendance tracking, and performance analytics—all in one powerful dashboard!"
+            </Text>
 
-            {/* Teachers Count Card */}
-            <View style={styles.card}>
-                <Text style={styles.cardIcon}>👩‍🏫</Text>
-                <Text style={styles.cardTitle}>Teachers</Text>
-                <Text style={styles.cardCount}>20</Text>
-            </View>
+            <View style={styles.cardContainer}>
 
-            {/* Program Count Card */}
-            <View style={styles.card}>
-                <Text style={styles.cardIcon}>📚</Text>
-                <Text style={styles.cardTitle}>Programs</Text>
-                <Text style={styles.cardCount}>5</Text>
+                <View style={styles.card}>
+                    <Text style={styles.cardTitle}>Program</Text>
+                    <Text style={styles.cardCount}>1328</Text>
+                    <Text style={styles.cardDescription}>All registered students</Text>
+                </View>
+
+
+                <View style={styles.card}>
+                    <Text style={styles.cardTitle}>Teacher</Text>
+                    <Text style={styles.cardCount}>1328</Text>
+                    <Text style={styles.cardDescription}>All registered teachers</Text>
+                </View>
+
+
+                <View style={styles.card}>
+                    <Text style={styles.cardTitle}>Staff</Text>
+                    <Text style={styles.cardCount}>1328</Text>
+                    <Text style={styles.cardDescription}>All registered staff</Text>
+                </View>
             </View>
         </View>
     );
@@ -32,49 +39,63 @@ export default function Home() {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#e5e7eb', // Light background
         padding: 20,
+        backgroundColor: '#f5f5f5',
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
+    welcome: {
+        fontSize: 32,
+        fontWeight: '600',
+        fontFamily: 'monospace',
+        marginBottom: 20,
+        textAlign: 'center',
+    },
+    description: {
+        fontSize: 16,
+        color: '#555',
+        textAlign: 'center',
+        marginBottom: 30,
+        width: '80%',
     },
     header: {
-        fontSize: 28,
+        fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 30,
-        color: '#0ea5e9', // Blue header
-        textShadowColor: 'rgba(0, 0, 0, 0.3)',
-        textShadowOffset: { width: 2, height: 2 },
-        textShadowRadius: 5,
+    },
+    cardContainer: {
+        flexDirection: 'column',
+        alignItems: 'center',
+        width: '100%',
     },
     card: {
-        width: '90%',
-        padding: 25,
+        backgroundColor: '#ffffff',
+        borderRadius: 10,
+        padding: 20,
         marginBottom: 20,
-        borderRadius: 15,
-        alignItems: 'center',
-        backgroundColor: '#06B6D4',
-        elevation: 8, // Android Shadow
         shadowColor: '#000',
-        shadowOffset: { width: 2, height: 4 },
-        shadowOpacity: 0.4,
-        shadowRadius: 6,
-        transform: [{ scale: 1 }],
-    },
-    cardIcon: {
-        fontSize: 40,
-        marginBottom: 10,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        width: '90%',
+        alignItems: 'center',
+        textAlign: 'center',
     },
     cardTitle: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: 'bold',
-        color: '#fff',
-        marginBottom: 5,
-        textTransform: 'uppercase',
+        marginBottom: 10,
     },
     cardCount: {
-        fontSize: 26,
-        fontWeight: 'bold',
-        color: '#fff',
+        fontSize: 24,
+        color: '#555',
+        marginBottom: 10,
+    },
+    cardDescription: {
+        fontSize: 14,
+        color: '#777',
+        textAlign: 'center',
     },
 });
