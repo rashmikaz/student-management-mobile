@@ -1,157 +1,165 @@
-import React, { useState } from "react";
-import {Button, StyleSheet, Text, TextInput, View, TouchableOpacity, Alert} from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, TextInput, Button, FlatList, StyleSheet, Alert } from "react-native";
 import axios from "axios";
 
-export default function Student() {
-    const [firstName, setFirstName] = useState('');
-    const [email, setEmail] = useState('');
-    const [nic, setNic] = useState('');
-    const [address, setAddress] = useState('');
-    const [program, setProgram] = useState('');
+// Define Student type
+export interface Student {
+    id?: number;
+    firstName: string;
+    email: string;
+    nic: string;
+    address: string;
+    program: string;
+}
 
-    const handleSubmit = async () => {
-        const studentData = { firstName, email, nic, address, program };
+const StudentScreen = () => {
+    // Form states
+    const [firstName, setFirstName] = useState("");
+    const [email, setEmail] = useState("");
+    const [nic, setNic] = useState("");
+    const [address, setAddress] = useState("");
+    const [program, setProgram] = useState("");
 
+    // Table data
+    const [students, setStudents] = useState<Student[]>([]);
+
+    // Fetch all students
+    const fetchStudents = async () => {
         try {
-            const response = await axios.post('http://localhost:3000/student/add', studentData);
-            console.log(response.data);
-            Alert.alert('Success', 'Student added successfully!');
-
-            setFirstName('');
-            setEmail('');
-            setNic('');
-            setAddress('');
-            setProgram('');
-
+            const response = await axios.get<Student[]>("http://localhost:3000/student/all");
+            setStudents(response.data);
         } catch (error) {
             console.error(error);
-            Alert.alert('Error', 'Failed to add student');
+            Alert.alert("Error", "Failed to fetch students");
         }
     };
 
-    const handleClose = () => {
-        console.log("Form Closed");
+    useEffect(() => {
+        fetchStudents();
+    }, []);
+
+    // Add student
+    const handleSubmit = async () => {
+        const studentData: Student = { firstName, email, nic, address, program };
+
+        try {
+            const response = await axios.post("http://localhost:3000/student/add", studentData);
+            console.log(response.data);
+            Alert.alert("Success", "Student added successfully!");
+            setFirstName("");
+            setEmail("");
+            setNic("");
+            setAddress("");
+            setProgram("");
+            fetchStudents(); // refresh list
+        } catch (error) {
+            console.error(error);
+            Alert.alert("Error", "Failed to add student");
+        }
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.heading}>Student Manage</Text>
-
-            <View style={styles.nameContainer}>
-                <TextInput
-                    style={[styles.textFields, styles.nameField]}
-                    placeholder="First Name"
-                    value={firstName}
-                    onChangeText={setFirstName}
-                />
-            </View>
+            <Text style={styles.heading}>Add Student</Text>
 
             <TextInput
-                style={styles.textFields}
-                placeholder="email"
+                style={styles.input}
+                placeholder="First Name"
+                value={firstName}
+                onChangeText={setFirstName}
+            />
+            <TextInput
+                style={styles.input}
+                placeholder="Email"
                 value={email}
                 onChangeText={setEmail}
             />
             <TextInput
-                style={styles.textFields}
-                placeholder="Nic"
+                style={styles.input}
+                placeholder="NIC"
                 value={nic}
                 onChangeText={setNic}
             />
-            <View style={styles.rowContainer}>
-                <TextInput
-                    style={[styles.textFields, styles.halfField]}
-                    placeholder="Address"
-                    value={address}
-                    onChangeText={setAddress}
-                />
-            </View>
-
             <TextInput
-                style={styles.textFields}
+                style={styles.input}
+                placeholder="Address"
+                value={address}
+                onChangeText={setAddress}
+            />
+            <TextInput
+                style={styles.input}
                 placeholder="Program"
                 value={program}
                 onChangeText={setProgram}
             />
 
-            <TouchableOpacity style={styles.addButton} onPress={handleSubmit}>
-                <Text style={styles.addButtonText}>Add</Text>
-            </TouchableOpacity>
+            <Button title="Add Student" onPress={handleSubmit} />
 
-            <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-                <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
+            <Text style={styles.heading}>Student List</Text>
+
+            {/* Table Header */}
+            <View style={[styles.tableRow, styles.tableHeader]}>
+                <Text style={[styles.cell, { flex: 1 }]}>ID</Text>
+                <Text style={[styles.cell, { flex: 2 }]}>Name</Text>
+                <Text style={[styles.cell, { flex: 2 }]}>Email</Text>
+                <Text style={[styles.cell, { flex: 2 }]}>NIC</Text>
+                <Text style={[styles.cell, { flex: 2 }]}>Address</Text>
+                <Text style={[styles.cell, { flex: 2 }]}>Program</Text>
+            </View>
+
+            {/* Student List */}
+            <FlatList<Student>
+                data={students}
+                keyExtractor={(item) => item.id?.toString() ?? Math.random().toString()}
+                ListEmptyComponent={() => (
+                    <Text style={{ textAlign: "center", marginTop: 10 }}>No students found</Text>
+                )}
+                renderItem={({ item }) => (
+                    <View style={styles.tableRow}>
+                        <Text style={[styles.cell, { flex: 1 }]}>{item.id ?? "-"}</Text>
+                        <Text style={[styles.cell, { flex: 2 }]}>{item.firstName}</Text>
+                        <Text style={[styles.cell, { flex: 2 }]}>{item.email}</Text>
+                        <Text style={[styles.cell, { flex: 2 }]}>{item.nic}</Text>
+                        <Text style={[styles.cell, { flex: 2 }]}>{item.address}</Text>
+                        <Text style={[styles.cell, { flex: 2 }]}>{item.program}</Text>
+                    </View>
+                )}
+            />
         </View>
     );
-}
+};
 
+export default StudentScreen;
+
+// Styles
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: "center",
         padding: 20,
-        backgroundColor: "#f7f7f7",
     },
     heading: {
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: "bold",
+        marginVertical: 10,
         textAlign: "center",
-        marginBottom: 30,
-        color: "#333",
     },
-    nameContainer: {
+    input: {
+        borderWidth: 1,
+        borderColor: "#ccc",
+        padding: 8,
+        marginVertical: 5,
+        borderRadius: 5,
+    },
+    tableRow: {
         flexDirection: "row",
-        justifyContent: "space-between",
-        marginBottom: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: "#ddd",
+        paddingVertical: 6,
     },
-    rowContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        marginBottom: 15,
+    tableHeader: {
+        backgroundColor: "#eee",
     },
-    textFields: {
-        borderWidth: 2,
-        borderColor: '#6c757d',
-        padding: 12,
-        marginBottom: 15,
-        borderRadius: 8,
-        fontSize: 16,
-        backgroundColor: '#ffffff',
-        color: '#333',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-    },
-    nameField: {
-        flex: 1,
-        marginRight: 10,
-    },
-    halfField: {
-        flex: 1,
-        marginRight: 10,
-    },
-    addButton: {
-        backgroundColor: '#06B6D4',
-        padding: 15,
-        borderRadius: 8,
-        marginBottom: 15,
-        alignItems: 'center',
-    },
-    addButtonText: {
-        color: '#fff',
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    closeButton: {
-        backgroundColor: '#f44336',
-        padding: 15,
-        borderRadius: 8,
-        alignItems: 'center',
-    },
-    closeButtonText: {
-        color: '#fff',
-        fontSize: 18,
-        fontWeight: 'bold',
+    cell: {
+        textAlign: "center",
     },
 });
