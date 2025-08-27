@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, Button, FlatList, StyleSheet, Alert } from "react-native";
+import { View, Text, TextInput, Button, FlatList, StyleSheet, Alert, TouchableOpacity } from "react-native";
 import axios from "axios";
 
 // Define Student type
@@ -58,6 +58,23 @@ const StudentScreen = () => {
         }
     };
 
+
+    const handleDelete = async (id?: number) => {
+        if (!id) return;
+        try {
+            await axios.delete(`http://localhost:3000/student/delete/${id}`);
+            Alert.alert("Deleted", "Student removed successfully!");
+
+
+            fetchStudents();
+
+
+
+        } catch (error) {
+            console.error(error);
+            Alert.alert("Error", "Failed to delete student");
+        }
+    };
     return (
         <View style={styles.container}>
             <Text style={styles.heading}>Add Student</Text>
@@ -105,9 +122,10 @@ const StudentScreen = () => {
                 <Text style={[styles.cell, { flex: 2 }]}>NIC</Text>
                 <Text style={[styles.cell, { flex: 2 }]}>Address</Text>
                 <Text style={[styles.cell, { flex: 2 }]}>Program</Text>
+                <Text style={[styles.cell, { flex: 1 }]}>Action</Text>
             </View>
 
-            {/* Student List */}
+
             <FlatList<Student>
                 data={students}
                 keyExtractor={(item) => item.id?.toString() ?? Math.random().toString()}
@@ -122,6 +140,12 @@ const StudentScreen = () => {
                         <Text style={[styles.cell, { flex: 2 }]}>{item.nic}</Text>
                         <Text style={[styles.cell, { flex: 2 }]}>{item.address}</Text>
                         <Text style={[styles.cell, { flex: 2 }]}>{item.program}</Text>
+                        <TouchableOpacity
+                            style={styles.deleteButton}
+                            onPress={() => handleDelete(item.id)}
+                        >
+                            <Text style={styles.deleteText}>Delete</Text>
+                        </TouchableOpacity>
                     </View>
                 )}
             />
@@ -155,11 +179,23 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: "#ddd",
         paddingVertical: 6,
+        alignItems: "center",
     },
     tableHeader: {
         backgroundColor: "#eee",
     },
     cell: {
         textAlign: "center",
+    },
+    deleteButton: {
+        backgroundColor: "red",
+        paddingVertical: 4,
+        paddingHorizontal: 8,
+        borderRadius: 4,
+    },
+    deleteText: {
+        color: "#fff",
+        fontWeight: "bold",
+        fontSize: 12,
     },
 });
