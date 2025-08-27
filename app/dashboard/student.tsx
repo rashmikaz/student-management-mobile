@@ -1,19 +1,32 @@
 import React, { useState } from "react";
-import { Button, StyleSheet, Text, TextInput, View, TouchableOpacity } from "react-native";
+import {Button, StyleSheet, Text, TextInput, View, TouchableOpacity, Alert} from "react-native";
+import axios from "axios";
 
 export default function Student() {
     const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
-    const [phone, setPhone] = useState('');
+    const [nic, setNic] = useState('');
     const [address, setAddress] = useState('');
-    const [city, setCity] = useState('');
     const [program, setProgram] = useState('');
-    const [birthday, setBirthday] = useState('');
 
+    const handleSubmit = async () => {
+        const studentData = { firstName, email, nic, address, program };
 
-    const handleSubmit = () => {
-        console.log({ firstName, lastName, email, phone, address, city, program, birthday });
+        try {
+            const response = await axios.post('http://localhost:3000/student/add', studentData);
+            console.log(response.data);
+            Alert.alert('Success', 'Student added successfully!');
+
+            setFirstName('');
+            setEmail('');
+            setNic('');
+            setAddress('');
+            setProgram('');
+
+        } catch (error) {
+            console.error(error);
+            Alert.alert('Error', 'Failed to add student');
+        }
     };
 
     const handleClose = () => {
@@ -31,52 +44,34 @@ export default function Student() {
                     value={firstName}
                     onChangeText={setFirstName}
                 />
-                <TextInput
-                    style={[styles.textFields, styles.nameField]}
-                    placeholder="Last Name"
-                    value={lastName}
-                    onChangeText={setLastName}
-                />
             </View>
 
             <TextInput
                 style={styles.textFields}
-                placeholder="Street Address"
-                value={address}
-                onChangeText={setAddress}
-            />
-            <TextInput
-                style={styles.textFields}
-                placeholder="City"
-                value={city}
-                onChangeText={setCity}
-            />
-            <View style={styles.rowContainer}>
-                <TextInput
-                    style={[styles.textFields, styles.halfField]}
-                    placeholder="Program"
-                    value={program}
-                    onChangeText={setProgram}
-                />
-                <TextInput
-                    style={[styles.textFields, styles.halfField]}
-                    placeholder="Birthday"
-                    value={birthday}
-                    onChangeText={setBirthday}
-                />
-            </View>
-
-            <TextInput
-                style={styles.textFields}
-                placeholder="Email"
+                placeholder="email"
                 value={email}
                 onChangeText={setEmail}
             />
             <TextInput
                 style={styles.textFields}
-                placeholder="Phone"
-                value={phone}
-                onChangeText={setPhone}
+                placeholder="Nic"
+                value={nic}
+                onChangeText={setNic}
+            />
+            <View style={styles.rowContainer}>
+                <TextInput
+                    style={[styles.textFields, styles.halfField]}
+                    placeholder="Address"
+                    value={address}
+                    onChangeText={setAddress}
+                />
+            </View>
+
+            <TextInput
+                style={styles.textFields}
+                placeholder="Program"
+                value={program}
+                onChangeText={setProgram}
             />
 
             <TouchableOpacity style={styles.addButton} onPress={handleSubmit}>
