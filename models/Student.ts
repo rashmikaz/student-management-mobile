@@ -1,12 +1,14 @@
 export default class Student {
-    name: string;
+    id?: number;
+    firstName: string;
     email: string;
     nic: string;
     address: string;
     program: string;
 
-    constructor(name: string, email: string, nic: string, address: string, program: string) {
-        this.name = name;
+    constructor(firstName: string, email: string, nic: string, address: string, program: string, id?: number) {
+        this.id = id;
+        this.firstName = firstName;
         this.email = email;
         this.nic = nic;
         this.address = address;
