@@ -38,8 +38,8 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
     container :{
-      flex:2,
-      justifyContent: "center",
+        flex:2,
+        justifyContent: "center",
         padding: 20
     },
 
@@ -49,9 +49,9 @@ const styles = StyleSheet.create({
         marginBottom: 20
     },
     textFields :{
-      borderWidth: 1,
-      padding: 10,
-      marginBottom : 10
+        borderWidth: 1,
+        padding: 10,
+        marginBottom : 10
     },
     logo: {
         width: 350,
