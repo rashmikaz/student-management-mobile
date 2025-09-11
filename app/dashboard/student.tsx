@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, Button, FlatList, StyleSheet, Alert, TouchableOpacity } from "react-native";
 import axios from "axios";
-import Student from "../../models/Student"; // import the class
+import Student from "../../models/Student";
 
 const StudentScreen = () => {
     const [firstName, setFirstName] = useState("");
