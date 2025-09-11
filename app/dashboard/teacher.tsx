@@ -1,155 +1,124 @@
-import {StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
-import React, {useState} from "react";
+import React, { useState, useEffect } from "react";
+import { View, Text, TextInput, Button, FlatList, StyleSheet, Alert, TouchableOpacity } from "react-native";
+import axios from "axios";
+import Teacher from "../../models/Teacher";
 
-export default function Teacher() {
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [email, setEmail] = useState('');
-    const [phone, setPhone] = useState('');
-    const [address, setAddress] = useState('');
-    const [module, setModule] = useState('');
-    const [birthday, setBirthday] = useState('');
+const TeacherScreen = () => {
+    const [fullName, setFullName] = useState("");
+    const [email, setEmail] = useState("");
+    const [nic, setNic] = useState("");
+    const [address, setAddress] = useState("");
+    const [subject, setSubject] = useState("");
 
+    const [teachers, setTeachers] = useState<Teacher[]>([]);
 
-    const handleSubmit = () => {
-        console.log({ firstName, lastName, email, phone, address,module, birthday });
+    // Fetch all teachers
+    const fetchTeachers = async () => {
+        try {
+            const response = await axios.get<Teacher[]>("http://localhost:3000/teacher/all");
+            setTeachers(response.data);
+        } catch (error) {
+            console.error(error);
+            Alert.alert("Error", "Failed to fetch teachers");
+        }
     };
 
-    const handleClose = () => {
-        console.log("Form Closed");
+    useEffect(() => {
+        fetchTeachers();
+    }, []);
+
+    // Add teacher
+    const handleAdd = async () => {
+        if (!fullName || !email || !nic || !address || !subject) {
+            Alert.alert("Validation", "All fields are required!");
+            return;
+        }
+
+        const teacherData = new Teacher(fullName, email, nic, address, subject);
+
+        try {
+            await axios.post("http://localhost:3000/teacher/add", teacherData);
+            Alert.alert("Success", "Teacher added successfully!");
+            setFullName("");
+            setEmail("");
+            setNic("");
+            setAddress("");
+            setSubject("");
+            fetchTeachers(); // Refresh list immediately
+        } catch (error) {
+            console.error(error);
+            Alert.alert("Error", "Failed to add teacher");
+        }
+    };
+
+    // Delete teacher
+    const handleDelete = async (id?: number) => {
+        if (!id) return;
+        try {
+            await axios.delete(`http://localhost:3000/teacher/delete/${id}`);
+            Alert.alert("Deleted", "Teacher removed successfully!");
+            fetchTeachers();
+        } catch (error) {
+            console.error(error);
+            Alert.alert("Error", "Failed to delete teacher");
+        }
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.heading}>Student Manage</Text>
+            <Text style={styles.heading}>Add Teacher</Text>
+            <TextInput style={styles.input} placeholder="Full Name" value={fullName} onChangeText={setFullName} />
+            <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} />
+            <TextInput style={styles.input} placeholder="NIC" value={nic} onChangeText={setNic} />
+            <TextInput style={styles.input} placeholder="Address" value={address} onChangeText={setAddress} />
+            <TextInput style={styles.input} placeholder="Subject" value={subject} onChangeText={setSubject} />
 
-            <View style={styles.nameContainer}>
-                <TextInput
-                    style={[styles.textFields, styles.nameField]}
-                    placeholder="First Name"
-                    value={firstName}
-                    onChangeText={setFirstName}
-                />
-                <TextInput
-                    style={[styles.textFields, styles.nameField]}
-                    placeholder="Last Name"
-                    value={lastName}
-                    onChangeText={setLastName}
-                />
+            <Button title="Add Teacher" onPress={handleAdd} />
+
+            <Text style={styles.heading}>Teacher List</Text>
+
+            {/* Table Header */}
+            <View style={[styles.tableRow, styles.tableHeader]}>
+                <Text style={[styles.cell, { flex: 1 }]}>ID</Text>
+                <Text style={[styles.cell, { flex: 2 }]}>Name</Text>
+                <Text style={[styles.cell, { flex: 2 }]}>Email</Text>
+                <Text style={[styles.cell, { flex: 2 }]}>NIC</Text>
+                <Text style={[styles.cell, { flex: 2 }]}>Address</Text>
+                <Text style={[styles.cell, { flex: 2 }]}>Subject</Text>
+                <Text style={[styles.cell, { flex: 1 }]}>Action</Text>
             </View>
 
-            <TextInput
-                style={styles.textFields}
-                placeholder="Street Address"
-                value={address}
-                onChangeText={setAddress}
+            <FlatList
+                data={teachers}
+                keyExtractor={(item) => item.id?.toString() ?? Math.random().toString()}
+                ListEmptyComponent={() => <Text style={{ textAlign: "center", marginTop: 10 }}>No teachers found</Text>}
+                renderItem={({ item }) => (
+                    <View style={styles.tableRow}>
+                        <Text style={[styles.cell, { flex: 1 }]}>{item.id ?? "-"}</Text>
+                        <Text style={[styles.cell, { flex: 2 }]}>{item.fullName}</Text>
+                        <Text style={[styles.cell, { flex: 2 }]}>{item.email}</Text>
+                        <Text style={[styles.cell, { flex: 2 }]}>{item.nic}</Text>
+                        <Text style={[styles.cell, { flex: 2 }]}>{item.address}</Text>
+                        <Text style={[styles.cell, { flex: 2 }]}>{item.subject}</Text>
+                        <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(item.id)}>
+                            <Text style={styles.deleteText}>Delete</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
             />
-            <TextInput
-                style={styles.textFields}
-                placeholder="Module"
-                value={module}
-                onChangeText={setModule}
-            />
-            <View style={styles.rowContainer}>
-                <TextInput
-                    style={[styles.textFields, styles.halfField]}
-                    placeholder="Birthday"
-                    value={birthday}
-                    onChangeText={setBirthday}
-                />
-            </View>
-
-            <TextInput
-                style={styles.textFields}
-                placeholder="Email"
-                value={email}
-                onChangeText={setEmail}
-            />
-            <TextInput
-                style={styles.textFields}
-                placeholder="Phone"
-                value={phone}
-                onChangeText={setPhone}
-            />
-
-            <TouchableOpacity style={styles.addButton} onPress={handleSubmit}>
-                <Text style={styles.addButtonText}>Add</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-                <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
         </View>
     );
-}
+};
+
+export default TeacherScreen;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: "center",
-        padding: 20,
-        backgroundColor: "#f7f7f7",
-    },
-    heading: {
-        fontSize: 24,
-        fontWeight: "bold",
-        textAlign: "center",
-        marginBottom: 30,
-        color: "#333",
-    },
-    nameContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        marginBottom: 15,
-    },
-    rowContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        marginBottom: 15,
-    },
-    textFields: {
-        borderWidth: 2,
-        borderColor: '#6c757d',
-        padding: 12,
-        marginBottom: 15,
-        borderRadius: 8,
-        fontSize: 16,
-        backgroundColor: '#ffffff',
-        color: '#333',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-    },
-    nameField: {
-        flex: 1,
-        marginRight: 10,
-    },
-    halfField: {
-        flex: 1,
-        marginRight: 10,
-    },
-    addButton: {
-        backgroundColor: '#06B6D4',
-        padding: 15,
-        borderRadius: 8,
-        marginBottom: 15,
-        alignItems: 'center',
-    },
-    addButtonText: {
-        color: '#fff',
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    closeButton: {
-        backgroundColor: '#f44336',
-        padding: 15,
-        borderRadius: 8,
-        alignItems: 'center',
-    },
-    closeButtonText: {
-        color: '#fff',
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
+    container: { flex: 1, padding: 20 },
+    heading: { fontSize: 20, fontWeight: "bold", marginVertical: 10, textAlign: "center" },
+    input: { borderWidth: 1, borderColor: "#ccc", padding: 8, marginVertical: 5, borderRadius: 5 },
+    tableRow: { flexDirection: "row", borderBottomWidth: 1, borderBottomColor: "#ddd", paddingVertical: 6, alignItems: "center" },
+    tableHeader: { backgroundColor: "#eee" },
+    cell: { textAlign: "center" },
+    deleteButton: { backgroundColor: "red", paddingVertical: 4, paddingHorizontal: 8, borderRadius: 4 },
+    deleteText: { color: "#fff", fontWeight: "bold", fontSize: 12 },
 });
