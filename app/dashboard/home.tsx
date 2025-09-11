@@ -10,6 +10,10 @@ export default function Home() {
     function goEmail(){
         router.replace('/email');
     }
+
+    function goAttendance(){
+        router.replace('/attendance');
+    }
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Text style={styles.header}>Student Management System</Text>
@@ -48,7 +52,7 @@ export default function Home() {
                     <Text style={styles.iconLabel}>Email</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.iconWrapper}>
+                <TouchableOpacity style={styles.iconWrapper} onPress={goAttendance}>
                     <View style={[styles.iconCircle, { backgroundColor: '#2DBF64' }]}>
                         <FontAwesome name="calendar-check-o" size={24} color="white" />
                     </View>
