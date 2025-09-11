@@ -1,8 +1,15 @@
 import React from 'react';
 import { Text, View, StyleSheet, Image, ScrollView,TouchableOpacity } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import {router, useRouter} from "expo-router";
 
 export default function Home() {
+
+    const router = useRouter();
+
+    function goEmail(){
+        router.replace('/email');
+    }
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Text style={styles.header}>Student Management System</Text>
@@ -34,7 +41,7 @@ export default function Home() {
             </View>
 
             <View style={styles.iconContainer}>
-                <TouchableOpacity style={styles.iconWrapper}>
+                <TouchableOpacity style={styles.iconWrapper} onPress={goEmail}>
                     <View style={[styles.iconCircle, { backgroundColor: '#407BFF' }]}>
                         <FontAwesome name="envelope" size={24} color="white" />
                     </View>
