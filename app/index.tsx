@@ -14,6 +14,9 @@ export default function LoginScreen() {
             router.replace('/dashboard');
         }
     }
+    function handleRegister(){
+        router.replace('/register');
+    }
     return (
 
         <View style={styles.container}>
@@ -29,7 +32,7 @@ export default function LoginScreen() {
             <TextInput style={styles.textFields} placeholder='Password' secureTextEntry onChangeText={setPassword}/>
             <Button  onPress={handleLogin} title='Login' color="#06B6D4"/>
             <Text style={styles.signupText}>new on our service?</Text>
-            <Text style={styles.signup}>create an account</Text>
+            <Text onPress={handleRegister} style={styles.signup}>create an account</Text>
 
         </View>
 

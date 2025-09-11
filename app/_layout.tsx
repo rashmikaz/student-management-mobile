@@ -9,8 +9,6 @@ function RootLayout() {
             <PaperProvider>
                 <Stack>
                     <Stack.Screen name='dashboard' options={{headerShown: false}}/>
-                    {/*<Stack.Screen name='Student' />*/}
-
                 </Stack>
             </PaperProvider>
         </Provider>
