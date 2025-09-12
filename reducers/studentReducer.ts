@@ -1,73 +1,73 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-import Student from "../models/Student";
+import { StudentModel } from "../models/Student";
 
 const api = axios.create({
-    baseURL: "http://localhost:3000/student", // backend API
+    baseURL: "http://localhost:3000/student",
 });
 
-// Initial state
-const initialState: Student[] = [];
+const initialState: StudentModel[] = [];
 
-// Fetch all students
-export const fetchStudents = createAsyncThunk<Student[]>(
-    "student/fetchAll",
+
+export const getStudents = createAsyncThunk<StudentModel[]>(
+    "student/getStudents",
     async (_, { rejectWithValue }) => {
         try {
             const response = await api.get("/all");
             return response.data;
-        } catch (err: any) {
-            return rejectWithValue(err.message);
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || "Failed to fetch students");
         }
     }
 );
 
-// Add a student
-export const addStudent = createAsyncThunk<Student, Student>(
-    "student/add",
-    async (student, { rejectWithValue }) => {
+
+export const saveStudent = createAsyncThunk<StudentModel, StudentModel>(
+    "student/saveStudent",
+    async (student, { dispatch, rejectWithValue }) => {
         try {
             const response = await api.post("/add", student);
+            dispatch(getStudents()); // refresh list
             return response.data;
-        } catch (err: any) {
-            return rejectWithValue(err.message);
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || "Failed to add student");
         }
     }
 );
 
-// Delete a student
-export const removeStudent = createAsyncThunk<number, number>(
-    "student/delete",
-    async (id, { rejectWithValue }) => {
+
+export const deletedStudent = createAsyncThunk<number, number>(
+    "student/deletedStudent",
+    async (id, { dispatch, rejectWithValue }) => {
         try {
             await api.delete(`/delete/${id}`);
+            dispatch(getStudents()); // refresh list
             return id;
-        } catch (err: any) {
-            return rejectWithValue(err.message);
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || "Failed to delete student");
         }
     }
 );
 
-const studentSlice = createSlice({
+const StudentSlice = createSlice({
     name: "student",
     initialState,
     reducers: {},
     extraReducers: (builder) => {
         builder
-            // fetch
-            .addCase(fetchStudents.fulfilled, (_, action) => action.payload)
-            .addCase(fetchStudents.rejected, (_, action) => console.error("Fetch failed:", action.payload))
-            // add
-            .addCase(addStudent.fulfilled, (state, action) => {
-                state.push(action.payload);
+            .addCase(getStudents.fulfilled, (_, action: PayloadAction<StudentModel[]>) => action.payload)
+            .addCase(getStudents.rejected, (_, action) => console.error("Fetch failed:", action.payload))
+
+            .addCase(saveStudent.fulfilled, (state, action: PayloadAction<StudentModel>) => {
+                state.push(action.payload); // ✅ Immer handles mutation
             })
-            .addCase(addStudent.rejected, (_, action) => console.error("Add failed:", action.payload))
-            // delete
-            .addCase(removeStudent.fulfilled, (state, action) => {
-                return state.filter((s) => s.id !== action.payload);
+            .addCase(saveStudent.rejected, (_, action) => console.error("Add failed:", action.payload))
+
+            .addCase(deletedStudent.fulfilled, (state, action: PayloadAction<number>) => {
+                return state.filter((student) => student.id !== action.payload);
             })
-            .addCase(removeStudent.rejected, (_, action) => console.error("Delete failed:", action.payload));
+            .addCase(deletedStudent.rejected, (_, action) => console.error("Delete failed:", action.payload));
     },
 });
 
-export default studentSlice.reducer;
+export default StudentSlice.reducer;

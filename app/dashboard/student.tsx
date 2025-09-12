@@ -1,67 +1,46 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, Button, FlatList, StyleSheet, Alert, TouchableOpacity } from "react-native";
-import axios from "axios";
-import Student from "../../models/Student";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../store/Store";
+import { getStudents, saveStudent, deletedStudent } from "../../reducers/studentReducer";
+import  {StudentModel}  from "../../models/Student";
 
 const StudentScreen = () => {
+    const dispatch = useDispatch<AppDispatch>();
+    const students = useSelector((state: RootState) => state.students);
+
     const [firstName, setFirstName] = useState("");
     const [email, setEmail] = useState("");
     const [nic, setNic] = useState("");
     const [address, setAddress] = useState("");
     const [program, setProgram] = useState("");
 
-    const [students, setStudents] = useState<Student[]>([]);
-
-    // Fetch all students
-    const fetchStudents = async () => {
-        try {
-            const response = await axios.get<Student[]>("http://localhost:3000/student/all");
-            setStudents(response.data);
-        } catch (error) {
-            console.error(error);
-            Alert.alert("Error", "Failed to fetch students");
-        }
-    };
-
     useEffect(() => {
-        fetchStudents();
-    }, []);
+        dispatch(getStudents());
+    }, [dispatch]);
 
-    // Add student
-    const handleAdd = async () => {
+    const handleAdd = () => {
         if (!firstName || !email || !nic || !address || !program) {
             Alert.alert("Validation", "All fields are required!");
             return;
         }
 
-        const studentData = new Student(firstName, email, nic, address, program);
-
-        try {
-            await axios.post("http://localhost:3000/student/add", studentData);
-            Alert.alert("Success", "Student added successfully!");
-            setFirstName("");
-            setEmail("");
-            setNic("");
-            setAddress("");
-            setProgram("");
-            fetchStudents(); // Refresh list immediately
-        } catch (error) {
-            console.error(error);
-            Alert.alert("Error", "Failed to add student");
-        }
+        const newStudent = new StudentModel(firstName, email, nic, address, program);
+        dispatch(saveStudent(newStudent));
+        resetForm();
     };
 
-    // Delete student
-    const handleDelete = async (id?: number) => {
+    const handleDelete = (id?: number) => {
         if (!id) return;
-        try {
-            await axios.delete(`http://localhost:3000/student/delete/${id}`);
-            Alert.alert("Deleted", "Student removed successfully!");
-            fetchStudents();
-        } catch (error) {
-            console.error(error);
-            Alert.alert("Error", "Failed to delete student");
-        }
+        dispatch(deletedStudent(id));
+    };
+
+    const resetForm = () => {
+        setFirstName("");
+        setEmail("");
+        setNic("");
+        setAddress("");
+        setProgram("");
     };
 
     return (
@@ -76,17 +55,6 @@ const StudentScreen = () => {
             <Button title="Add Student" onPress={handleAdd} />
 
             <Text style={styles.heading}>Student List</Text>
-
-            {/* Table Header */}
-            <View style={[styles.tableRow, styles.tableHeader]}>
-                <Text style={[styles.cell, { flex: 1 }]}>ID</Text>
-                <Text style={[styles.cell, { flex: 2 }]}>Name</Text>
-                <Text style={[styles.cell, { flex: 2 }]}>Email</Text>
-                <Text style={[styles.cell, { flex: 2 }]}>NIC</Text>
-                <Text style={[styles.cell, { flex: 2 }]}>Address</Text>
-                <Text style={[styles.cell, { flex: 2 }]}>Program</Text>
-                <Text style={[styles.cell, { flex: 1 }]}>Action</Text>
-            </View>
 
             <FlatList
                 data={students}
@@ -117,7 +85,6 @@ const styles = StyleSheet.create({
     heading: { fontSize: 20, fontWeight: "bold", marginVertical: 10, textAlign: "center" },
     input: { borderWidth: 1, borderColor: "#ccc", padding: 8, marginVertical: 5, borderRadius: 5 },
     tableRow: { flexDirection: "row", borderBottomWidth: 1, borderBottomColor: "#ddd", paddingVertical: 6, alignItems: "center" },
-    tableHeader: { backgroundColor: "#eee" },
     cell: { textAlign: "center" },
     deleteButton: { backgroundColor: "red", paddingVertical: 4, paddingHorizontal: 8, borderRadius: 4 },
     deleteText: { color: "#fff", fontWeight: "bold", fontSize: 12 },

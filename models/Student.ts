@@ -1,5 +1,5 @@
-export default class Student {
-    id?: number;
+export class StudentModel {
+    id?: number;        // optional, assigned by backend
     firstName: string;
     email: string;
     nic: string;
