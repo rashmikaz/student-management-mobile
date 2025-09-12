@@ -1,67 +1,51 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, Button, FlatList, StyleSheet, Alert, TouchableOpacity } from "react-native";
-import axios from "axios";
-import Program from "../../models/Program";
+import { View, Text, TextInput, Button, FlatList, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../store/Store";
+import { ProgramModel } from "../../models/Program";
+import { getPrograms, saveProgram, deleteProgram } from "../../reducers/programReducer";
 
 const ProgramScreen = () => {
+    const dispatch = useDispatch<AppDispatch>();
+    const programs = useSelector((state: RootState) => state.programs);
+
     const [name, setName] = useState("");
     const [duration, setDuration] = useState("");
 
-    const [programs, setPrograms] = useState<Program[]>([]);
-
-    // Fetch all programs
-    const fetchPrograms = async () => {
-        try {
-            const response = await axios.get<Program[]>("http://localhost:3000/program/all");
-            setPrograms(response.data);
-        } catch (error) {
-            console.error(error);
-            Alert.alert("Error", "Failed to fetch programs");
-        }
-    };
-
     useEffect(() => {
-        fetchPrograms();
-    }, []);
+        dispatch(getPrograms());
+    }, [dispatch]);
 
-    // Add program
-    const handleAdd = async () => {
+    const handleAdd = () => {
         if (!name || !duration) {
             Alert.alert("Validation", "All fields are required!");
             return;
         }
 
-        const programData = new Program(name, parseInt(duration));
-
-        try {
-            await axios.post("http://localhost:3000/program/add", programData);
-            Alert.alert("Success", "Program added successfully!");
-            setName("");
-            setDuration("");
-            fetchPrograms(); // Refresh list immediately
-        } catch (error) {
-            console.error(error);
-            Alert.alert("Error", "Failed to add program");
-        }
+        const newProgram = new ProgramModel(name, parseInt(duration));
+        dispatch(saveProgram(newProgram));
+        resetForm();
     };
 
-    // Delete program
-    const handleDelete = async (id?: number) => {
+    const handleDelete = (id?: number) => {
         if (!id) return;
-        try {
-            await axios.delete(`http://localhost:3000/program/delete/${id}`);
-            Alert.alert("Deleted", "Program removed successfully!");
-            fetchPrograms();
-        } catch (error) {
-            console.error(error);
-            Alert.alert("Error", "Failed to delete program");
-        }
+        dispatch(deleteProgram(id));
+    };
+
+    const resetForm = () => {
+        setName("");
+        setDuration("");
     };
 
     return (
         <View style={styles.container}>
             <Text style={styles.heading}>Add Program</Text>
-            <TextInput style={styles.input} placeholder="Program Name" value={name} onChangeText={setName} />
+            <TextInput
+                style={styles.input}
+                placeholder="Program Name"
+                value={name}
+                onChangeText={setName}
+            />
             <TextInput
                 style={styles.input}
                 placeholder="Duration (in months)"
@@ -74,7 +58,6 @@ const ProgramScreen = () => {
 
             <Text style={styles.heading}>Program List</Text>
 
-            {/* Table Header */}
             <View style={[styles.tableRow, styles.tableHeader]}>
                 <Text style={[styles.cell, { flex: 1 }]}>ID</Text>
                 <Text style={[styles.cell, { flex: 2 }]}>Name</Text>
@@ -85,13 +68,18 @@ const ProgramScreen = () => {
             <FlatList
                 data={programs}
                 keyExtractor={(item) => item.id?.toString() ?? Math.random().toString()}
-                ListEmptyComponent={() => <Text style={{ textAlign: "center", marginTop: 10 }}>No programs found</Text>}
+                ListEmptyComponent={() => (
+                    <Text style={{ textAlign: "center", marginTop: 10 }}>No programs found</Text>
+                )}
                 renderItem={({ item }) => (
                     <View style={styles.tableRow}>
                         <Text style={[styles.cell, { flex: 1 }]}>{item.id ?? "-"}</Text>
                         <Text style={[styles.cell, { flex: 2 }]}>{item.name}</Text>
                         <Text style={[styles.cell, { flex: 2 }]}>{item.duration} months</Text>
-                        <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(item.id)}>
+                        <TouchableOpacity
+                            style={styles.deleteButton}
+                            onPress={() => handleDelete(item.id)}
+                        >
                             <Text style={styles.deleteText}>Delete</Text>
                         </TouchableOpacity>
                     </View>

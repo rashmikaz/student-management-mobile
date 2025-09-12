@@ -1,4 +1,4 @@
-export default class Program {
+export class ProgramModel {
     id?: number;
     name: string;
     duration: number;

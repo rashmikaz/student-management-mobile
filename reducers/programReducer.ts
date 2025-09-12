@@ -1,73 +1,80 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import Program from "../models/Program";
+import { ProgramModel } from "../models/Program";
 
 const api = axios.create({
-    baseURL: "http://localhost:3000/program", // backend API
+    baseURL: "http://localhost:3000/program",
 });
 
-// Initial state
-const initialState: Program[] = [];
+const initialState: ProgramModel[] = [];
 
-// Fetch all programs
-export const fetchPrograms = createAsyncThunk<Program[]>(
-    "program/fetchAll",
+
+export const getPrograms = createAsyncThunk<ProgramModel[]>(
+    "program/getPrograms",
     async (_, { rejectWithValue }) => {
         try {
             const response = await api.get("/all");
             return response.data;
-        } catch (err: any) {
-            return rejectWithValue(err.message);
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || "Failed to load programs");
         }
     }
 );
 
-// Add a program
-export const addProgram = createAsyncThunk<Program, Program>(
-    "program/add",
-    async (program, { rejectWithValue }) => {
+
+export const saveProgram = createAsyncThunk(
+    "program/saveProgram",
+    async (program: ProgramModel, { dispatch, rejectWithValue }) => {
         try {
             const response = await api.post("/add", program);
+            dispatch(getPrograms()); // Refresh list
             return response.data;
-        } catch (err: any) {
-            return rejectWithValue(err.message);
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || "Failed to save program");
         }
     }
 );
 
-// Delete a program
-export const removeProgram = createAsyncThunk<number, number>(
-    "program/delete",
-    async (id, { rejectWithValue }) => {
+
+export const deleteProgram = createAsyncThunk(
+    "program/deleteProgram",
+    async (id: number, { dispatch, rejectWithValue }) => {
         try {
             await api.delete(`/delete/${id}`);
+            dispatch(getPrograms()); // Refresh list
             return id;
-        } catch (err: any) {
-            return rejectWithValue(err.message);
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data || "Failed to delete program");
         }
     }
 );
 
-const programSlice = createSlice({
+const ProgramSlice = createSlice({
     name: "program",
     initialState,
     reducers: {},
     extraReducers: (builder) => {
         builder
-            // fetch
-            .addCase(fetchPrograms.fulfilled, (_, action) => action.payload)
-            .addCase(fetchPrograms.rejected, (_, action) => console.error("Fetch failed:", action.payload))
-            // add
-            .addCase(addProgram.fulfilled, (state, action) => {
+
+            .addCase(getPrograms.fulfilled, (_, action) => action.payload)
+            .addCase(getPrograms.rejected, (_, action) =>
+                console.error("Error fetching programs:", action.payload)
+            )
+
+            .addCase(saveProgram.fulfilled, (state, action) => {
                 state.push(action.payload);
             })
-            .addCase(addProgram.rejected, (_, action) => console.error("Add failed:", action.payload))
-            // delete
-            .addCase(removeProgram.fulfilled, (state, action) => {
+            .addCase(saveProgram.rejected, (_, action) =>
+                console.error("Error saving program:", action.payload)
+            )
+
+            .addCase(deleteProgram.fulfilled, (state, action) => {
                 return state.filter((p) => p.id !== action.payload);
             })
-            .addCase(removeProgram.rejected, (_, action) => console.error("Delete failed:", action.payload));
+            .addCase(deleteProgram.rejected, (_, action) =>
+                console.error("Error deleting program:", action.payload)
+            );
     },
 });
 
-export default programSlice.reducer;
+export default ProgramSlice.reducer;
