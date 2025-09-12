@@ -6,10 +6,10 @@ const api = axios.create({
     baseURL: "http://localhost:3000/teacher", // backend API
 });
 
-// Initial state
+
 const initialState: Teacher[] = [];
 
-// Fetch all teachers
+
 export const fetchTeachers = createAsyncThunk<Teacher[]>(
     "teacher/fetchAll",
     async (_, { rejectWithValue }) => {
@@ -22,7 +22,7 @@ export const fetchTeachers = createAsyncThunk<Teacher[]>(
     }
 );
 
-// Add a teacher
+
 export const addTeacher = createAsyncThunk<Teacher, Teacher>(
     "teacher/add",
     async (teacher, { rejectWithValue }) => {
@@ -35,7 +35,7 @@ export const addTeacher = createAsyncThunk<Teacher, Teacher>(
     }
 );
 
-// Delete a teacher
+
 export const removeTeacher = createAsyncThunk<number, number>(
     "teacher/delete",
     async (id, { rejectWithValue }) => {

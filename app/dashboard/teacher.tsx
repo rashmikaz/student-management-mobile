@@ -12,7 +12,7 @@ const TeacherScreen = () => {
 
     const [teachers, setTeachers] = useState<Teacher[]>([]);
 
-    // Fetch all teachers
+
     const fetchTeachers = async () => {
         try {
             const response = await axios.get<Teacher[]>("http://localhost:3000/teacher/all");
@@ -27,7 +27,7 @@ const TeacherScreen = () => {
         fetchTeachers();
     }, []);
 
-    // Add teacher
+
     const handleAdd = async () => {
         if (!fullName || !email || !nic || !address || !subject) {
             Alert.alert("Validation", "All fields are required!");
@@ -51,7 +51,7 @@ const TeacherScreen = () => {
         }
     };
 
-    // Delete teacher
+
     const handleDelete = async (id?: number) => {
         if (!id) return;
         try {

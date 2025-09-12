@@ -14,6 +14,10 @@ export default function Home() {
     function goAttendance(){
         router.replace('/attendance');
     }
+    function goTime(){
+        router.replace('/time');
+    }
+
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Text style={styles.header}>Student Management System</Text>
@@ -59,7 +63,7 @@ export default function Home() {
                     <Text style={styles.iconLabel}>Attendance</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.iconWrapper}>
+                <TouchableOpacity style={styles.iconWrapper} onPress={goTime}>
                     <View style={[styles.iconCircle, { backgroundColor: '#F4B400' }]}>
                         <FontAwesome name="table" size={24} color="white" />
                     </View>
