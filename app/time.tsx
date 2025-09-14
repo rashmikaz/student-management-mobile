@@ -16,7 +16,7 @@ const TimetableScreen = () => {
     const router = useRouter();
 
     const goBack = () => {
-        router.replace("/dashboard"); // navigate back to dashboard
+        router.replace("/dashboard");
     };
 
     return (
